@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="description" content="Susitna 100 GPS Tracker">
+
+  <title>Susitna 100 GPS Tracker</title>
+
+  <!-- Calcite Maps Bootstrap -->
+  <link rel="stylesheet" href="https://esri.github.io/calcite-maps/dist/css/calcite-maps-bootstrap.min-v0.3.css">
+
+  <!-- Calcite Maps -->
+  <link rel="stylesheet" href="https://esri.github.io/calcite-maps/dist/css/calcite-maps-arcgis-4.x.min-v0.3.css">
+
+  <!-- Calcite Widgets -->   
+  <link rel="stylesheet" href="https://js.arcgis.com/3.19/esri/themes/calcite/dijit/calcite.css">
+
+  <!-- ArcGIS JS 4 -->
+  <link rel="stylesheet" href="https://js.arcgis.com/4.3/esri/css/main.css">
+
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+
+    body a {
+      color: #f7921e;
+    }
+
+    body a:focus, body a:hover {
+      color: #fff;
+    }
+    
+    /* Nav */
+    
+    .navbar-form-custom {
+      width: 400px;
+      margin: 10px;
+    }
+
+    .navbar-form-custom .form-control, .btn-start {
+      height: 28px;
+    }
+
+    .btn-start, .btn-loading {
+      /*background-color: #f7921e;*/
+      color: #fff;
+      line-height: 1.2;
+      padding: 4px 8px 4px 8px;
+    }
+
+    .btn-loading {
+      padding-right: 0;
+    }
+
+    .btn-spot {
+      background-color: #f7921e;
+      margin-right: 10px;
+    }
+
+   /* .btn-spot:focus, 
+    .btn-spot:hover {
+      color: #fff;
+    }*/
+
+    @media (max-width: 768px) {
+      .navbar-form-custom {
+        left: 50px;
+        right: 0px;
+        position: fixed;
+        width: auto;
+      }
+    }
+
+    /* Spinner */
+
+    .btn-loading .glyphicon.spinning {
+      animation: spin 15s infinite linear;
+      -webkit-animation: spin2 15s infinite linear;
+    }
+     
+    @keyframes spin {
+        from { transform: scale(1) rotate(0deg);}
+        to { transform: scale(1) rotate(360deg);}
+    }
+     
+    @-webkit-keyframes spin2 {
+        from { -webkit-transform: rotate(0deg);}
+        to { -webkit-transform: rotate(360deg);}
+    }
+     
+    .btn-loading .glyphicon-left {
+      margin: 0 4px 0 4px;
+      top: 2px;
+    }
+
+    /* dot */
+
+   /* .dot{
+      margin: auto auto;
+      width: 360px;
+      height: 360px;
+      position: relative;
+    }
+
+    .centraldot{
+      width: 6px;
+      height: 6px;
+      background: rgba(32,150,243,1);
+      border-radius: 30px;
+      position: absolute;
+      left:147px;
+      top:147px;
+      transform-origin: 50% 50%;
+    }
+
+    .wave{
+      width: 260px;
+      height: 260px;
+      background: rgba(32,150,243,0.4);
+      border-radius: 200px;
+      position: absolute;
+      left:20px;
+      top:20px;
+      opacity: 0;
+      animation: animationWave cubic-bezier(0,.54,.53,1) 3s;
+      transform-origin: 50% 50%;
+      animation-fill-mode:forwards;
+      animation-delay:0.9s;
+      animation-iteration-count: infinite;
+    }
+
+    @keyframes animationWave{
+      0% {
+          opacity: 0;
+          transform:  scale(0.00);
+      }
+
+      1% {
+        opacity: 1;
+      }
+
+      10% {
+        background: rgba(32,150,243,0.4);
+      }
+
+      100% {
+        transform:  scale(1) ;
+        background: rgba(32,150,243,0.0);
+       }
+    }*/
+
+    /* Panels */
+    .calcite-panels {
+      z-index: 100;
+    }
+
+    /* ArcGIS */
+        
+    .esri-legend {
+      background-color: #333;
+      color: #fff;
+    }
+
+    .esri-ui-manual-container>.esri-component.esri-attribution {
+      position: fixed;
+    }
+    
+    .esri-popup__header-buttons .esri-popup__button.esri-popup__button--dock {
+      display: none; 
+    }
+
+    .esri-popup__main-container {
+      max-width: 320px;
+    }
+    
+    /* Input */
+    input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill {
+      background-color: #fff;
+    }
+
+    /* Info Panel */
+
+    .info-title {
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 28px;
+      color: #f8f8f8;
+    }
+
+    .info-title .esr-icon {
+      line-height: 1.7;
+      color: #f7921e;
+    }
+
+    .info-title-2 {
+      float: right;
+      margin-left: 25px;
+      font-size: 10px;
+      font-style: italic;
+      line-height: .95;
+      margin-top: 9px;
+    }
+
+    .info-date {
+      font-size: 18px;
+    }
+
+    .panel-body hr {
+      margin-top: 15px;
+      border-top: 1px #5d5d5d solid;
+    }
+
+    .info-text {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #ececec;
+    }
+
+    .info-text-header {
+      font-size: 18px;
+      padding-bottom: 10px;
+    }
+
+    .info-text ol {
+      padding-left: 15px
+    }
+
+    .info-text li {
+      padding-bottom: 15px;
+      line-height: 1.3;
+    }
+
+    .info-id {
+      padding: 2px 7px;
+      /*color: #333;*/
+      background-color: #000;
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 2.5;
+    }
+
+    .info-note {
+      margin-top: 15px;
+      color: #b7b7b7;
+      font-size: 11px;
+      line-height: 1.2;
+      font-style: italic;
+    }
+
+    /* Spot panel */
+
+    #panelTracks .panel-body {
+      padding: 0;
+    }
+
+    .calcite-panels.calcite-text-light a {
+      color: #f7921e;
+    }
+
+    .calcite-panels.calcite-text-light a:focus, .calcite-panels.calcite-text-light a:hover {
+      color: #fff;
+    }
+
+    .spot-panel-info {
+      text-align: center;
+      font-size: 20px;
+      margin-top: 15px;
+    }
+
+    #panelError {
+      text-align: center;
+      margin: 20px 15px;     
+    }
+
+    .spot-panel-error {
+      font-size: 14px;
+    }
+
+    .spot-panel-note {
+      font-size: 10px;
+      margin-top: 10px;
+      color: #b7b7b7;
+    }
+
+    .spot-panel-note {
+      font-size: 10px;
+    }
+
+    /* Spot table */
+    
+    .table>thead>tr>th {
+      border: none; 
+      font-weight: 300;
+      color: #fff;
+    }
+    
+    .calcite-panels.calcite-text-light .panel #spotTable.table>tbody>tr>td,
+    .calcite-panels.calcite-text-light .panel #spotTable.table>tbody>tr>th{
+      color: #d0d0d0;
+      border-top: 1px solid #4c4c4c;
+    }
+    
+    .table>tbody>tr>td:first-child {
+      padding-left: 20px;
+    }
+
+    .table-hover>tbody>tr:hover,     
+    .table-hover>tbody>tr.active:hover>td, 
+    .table-hover>tbody>tr:hover>.active, 
+    .table-hover>tbody>tr>td.active:hover{
+      background-color: rgba(0,0,0, .35);
+    }
+
+    .table>tbody>tr.active>td, 
+    .table>tbody>tr>td.active,
+    .table>tfoot>tr.active>td, 
+    .table>tfoot>tr>td.active, 
+    .table>thead>tr.active>td, 
+    .table>thead>tr>td.active {
+      background-color: #000;
+    }
+    
+    @media (max-width: 768px) {
+      .calcite-panels .panel-body {
+         max-height: 100px;
+      }
+    }
+
+  </style>
+
+</head>
+
+<body class="calcite calcite-maps calcite-nav-top">
+
+  <!-- Navbar -->
+
+  <nav class="navbar calcite-navbar navbar-fixed-top calcite-text-light calcite-bg-dark">
+    <!-- Menu -->
+    <div class="dropdown calcite-dropdown calcite-text-dark calcite-bg-light" role="presentation">
+      <a class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false">
+        <div class="calcite-dropdown-toggle">
+          <span class="sr-only">Toggle dropdown menu</span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </a>
+      <ul class="dropdown-menu">
+        <li><a role="button" data-target="#panelInfo" aria-haspopup="true"><span class="glyphicon glyphicon-info-sign"></span> About</a></li>
+        <li><a id="menuTracker" role="button" data-target="#panelTracks" aria-haspopup="true"><span class="glyphicon glyphicon-map-marker"></span> Tracker</a></li>
+        <li><a role="button" data-target="#panelBasemaps" aria-haspopup="true"><span class="glyphicon glyphicon-th-large"></span> Basemaps</a></li>
+        <li><a role="button" id="calciteToggleNavbar" aria-haspopup="true"><span class="glyphicon glyphicon-fullscreen"></span> Full Map</a></li>
+      </ul>
+    </div>
+    <!-- Title -->
+    <div class="calcite-title calcite-overflow-hidden">
+      <span class="calcite-title-main hidden-xs">Su100 Spot Tracker</span>
+      <span class="calcite-title-divider hidden-xs"></span>
+      <span class="calcite-title-sub hidden-xs">Live on Sat Feb 18th, 9:00 AM (Alaska Standard Time)</span>
+    </div>
+    <!-- Nav -->
+    <ul class="nav navbar-nav calcite-nav">
+      <li>
+        <!--div class="calcite-navbar-search calcite-search-expander">
+          <div id="searchWidgetDiv"></div>
+        </div-->
+      </li>
+      <li>
+        <form id="goSpotForm" class="navbar-form-custom">
+          <div class="input-group">
+            <input id="shareIDInput" type="text" class="form-control" aria-label="..." placeholder="Enter public SPOT URL or ID">
+            <div class="input-group-btn">
+              <button id="startSpotBtn" type="button" class="btn btn-start btn-success">
+                Start
+              </button>
+              <div id="spotLoadingBtn" class="btn btn-loading hidden">
+                <span class="glyphicon-left glyphicon glyphicon-refresh spinning"></span>
+              </div>
+            </div>
+          </div>      
+        </form>
+      </li>
+    </ul>
+  </nav>
+  <!--/.calcite-navbar -->
+
+  <!-- Map  -->
+
+  <div class="calcite-map calcite-map-absolute">
+    <div id="mapViewDiv"></div>
+  </div>
+  <!-- /.calcite-map -->
+
+  <!-- Panels -->
+
+  <div class="calcite-panels calcite-panels-right calcite-text-light calcite-bg-dark panel-group">
+
+    <!-- Panel - Info -->
+
+    <div id="panelInfo" class="panel collapse in">
+      <div id="headingInfo" class="panel-heading" role="tab">
+        <div class="panel-title">
+          <a class="panel-toggle" role="button" data-toggle="collapse" href="#collapseInfo" aria-expanded="true" aria-controls="collapseInfo"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span><span class="panel-label">About</span></a> 
+          <a class="panel-close" role="button" data-toggle="collapse" data-target="#panelInfo"><span class="esri-icon esri-icon-close" aria-hidden="true"></span></a>  
+        </div>
+      </div>
+      <div id="collapseInfo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingInfo">
+        <div class="panel-body">
+          <div class="info-title">
+            <span class="esri-icon esri-icon-map-pin"></span><span class="info-title">&nbsp;Su100 Spot Tracker</span>
+            <!--div class="info-title-2">Follow your friends live!</div-->
+            <hr>
+          </div>
+          <div class="info-text">
+            <p class="info-text-header">Follow a friend live on race day!</p>
+            <ol>
+             <li>Ask them to share their <a href="https://faq.findmespot.com/index.php?action=showEntry&data=236">SPOT GPS page publicly</a> and send you the URL. <!--span class="info-id">0h7hjAqzf8RBu18Pd3eudqNpNmVCgB1mU</span></li-->
+             <li>Paste in the URL above and click "Start".</li>
+            </ol>
+            </p>
+            <p>NOTE: Spot data is updated every 10 minutes.</p>
+          </div>
+          <hr>
+          <div class="info-note">
+            <p>Disclaimer: The map and checkpoints are only approximations and the race organizers say <a href="http://www.susitna100.com/susitna-100/2015-course.html">"the course can change at any time"</a>, so don't be alarmed if you see tracks slightly off course! Visit the official website for the <a href="http://www.susitna100.com/susitna-100/course-maps.html">latest news and information</a>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tracks Panel -->
+
+    <div id="panelTracks" class="panel collapse">
+
+      <div id="headingTracks" class="panel-heading" role="tab">
+        <div class="panel-title">
+          <a class="panel-toggle collapsed" role="button" data-toggle="collapse" href="#collapseTracks"
+            aria-expanded="false" aria-controls="collapseTracks"><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span><span class="panel-label">Tracker</span></a>
+          <a class="panel-close" role="button" data-toggle="collapse" data-target="#panelTracks"><span class="esri-icon esri-icon-close" aria-hidden="true"></span></a>
+        </div>
+      </div>
+
+      <div id="collapseTracks" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTracks">
+
+        <div id="panelSpotInfo" class="spot-panel-info hidden"></div>
+
+        <div id="panelError">
+          <div class="spot-panel-error">
+            <p>Sorry, no data found. Please check the URL or ID.</p>
+            <button id="spotDefaultBtn" class="btn btn-spot">Use Default</button><button id="spotDismissBtn" class="btn btn-success">Try Again</button>
+            <div class="spot-panel-note">NOTE: To follow a friend, ask them for their SPOT share URL ID and use it here.</div>
+          </div>
+        </div>      
+                  
+        <div class="panel-body hidden">
+          <table id="spotTable" class="table table-hover"> 
+            <tbody> 
+              <!-- Spot Data here --> 
+            </tbody> 
+          </table> 
+        </div>
+      </div>
+    </div>
+    
+    <!-- Basemaps Panel -->
+
+    <div id="panelBasemaps" class="panel collapse">
+      <div id="headingBasemaps" class="panel-heading" role="tab">
+        <div class="panel-title">
+          <a class="panel-toggle collapsed" role="button" data-toggle="collapse" href="#collapseBasemaps"
+            aria-expanded="false" aria-controls="collapseBasemaps"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span><span class="panel-label">Basemaps</span></a>
+          <a class="panel-close" role="button" data-toggle="collapse" data-target="#panelBasemaps"><span class="esri-icon esri-icon-close" aria-hidden="true"></span></a>
+        </div>
+      </div>
+      <div id="collapseBasemaps" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingBasemaps">
+        <div class="panel-body">
+          <select id="selectBasemapPanel" class="form-control">
+            <option value="streets-vector">Streets</option>
+            <option value="satellite">Satellite</option>
+            <option value="hybrid">Hybrid</option>
+            <option value="national-geographic">National Geographic</option>
+            <option value="topo-vector">Topographic</option>
+            <option value="gray-vector">Gray</option>
+            <option value="dark-gray-vector">Dark Gray</option>
+            <option value="osm">Open Street Map</option>
+            <option value="streets-night-vector">Streets Night</option>
+            <option value="streets-navigation-vector" selected="">Streets Navigation</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  <!-- /.calcite-panels -->
+
+  <script type="text/javascript">
+    var dojoConfig = {
+      packages: [{
+        name: "bootstrap",
+        location: "https://esri.github.io/calcite-maps/dist/vendor/dojo-bootstrap"
+      },
+      {
+        name: "calcite-maps",
+        location: "https://esri.github.io/calcite-maps/dist/js/dojo"
+      }]
+    };
+  </script>
+
+  <!-- ArcGIS JS 4 -->
+  <script src="https://js.arcgis.com/4.3/"></script>
+
+  <script>
+
+    require([   
+      "esri/WebMap",
+      "esri/views/MapView",
+      "esri/Map",
+      "esri/layers/FeatureLayer",
+      "esri/layers/support/Field",
+      "esri/geometry/Point",
+      "esri/Viewpoint",
+      "esri/layers/graphics/QueryEngine",
+      
+      "esri/renderers/UniqueValueRenderer",
+      "esri/symbols/SimpleMarkerSymbol",
+      "esri/layers/support/LabelClass",
+
+      "esri/widgets/Home",      
+      "esri/widgets/Zoom",
+      "esri/widgets/Legend",
+      "esri/widgets/Search",
+      "esri/widgets/Popup",
+      "esri/widgets/Compass",
+      "esri/widgets/BasemapToggle",
+      "esri/widgets/Attribution",
+      
+      "esri/core/watchUtils",
+      "esri/request",
+      "esri/config",
+      
+      "dojo/date",
+      "dojo/Deferred",
+      "dojo/query",
+      "dojo/_base/array",
+      "dojo/_base/url",
+      "dojo/dom-construct",
+      "dojo/dom-attr",
+      "dojo/dom",
+      "dojo/on",
+
+      // Bootstrap
+      "bootstrap/Dropdown",
+      "bootstrap/Collapse",
+      "bootstrap/Button",
+
+      // Calcite Maps
+      "calcite-maps/calcitemaps-v0.3",
+      
+      "dojo/domReady!"
+    ], function(Webmap, MapView, Map, FeatureLayer, Field, Point, Viewpoint, QueryEngine,
+      UniqueValueRenderer, SimpleMarkerSymbol, LabelClass, 
+      Home, Zoom, Legend, Search, Popup, Compass, BasemapToggle, Attribution,
+      watchUtils, esriRequest, esriConfig, 
+      date, Deferred, query, arrayUtils, Url, domConstruct, domAttr, dom, on
+    ) {
+      
+      var map;
+
+      var webmapId = "75c04691cc4941ab8f0ca359e69413a4";
+
+      var spotLayer;
+
+      var spotActiveIndex = -1;
+
+      var view;
+
+      var viewPaddingPanel = {top: 50, bottom: 0, right: 370, left: 0}; 
+
+      var viewPaddingNoPanel = {top: 50, bottom: 0, right: 0, left: 0};
+    
+      var spotViewScale = 25000;
+
+      // Spot
+
+      var spotName;
+
+      var spotModelId;
+
+      var spotTimer;
+
+      var spotDelay = 10000; // TODO - make adjustable
+
+      // Live - Sat Feb 18th
+      // var startDate = new Date('2017-02-18T00:00:00');
+      // var endDate = new Date('2017-02-20T00:00:00');
+      
+      // Test - Friday Feb 17
+      // var startDate = new Date('2017-02-17T00:00:00');
+      // var endDate = new Date('2017-02-19T00:00:00'); 
+
+      // Test - Sat Feb 11th
+      var startDate = new Date('2017-02-11T00:00:00'); // test
+      var endDate = new Date('2017-02-12T00:00:00'); // test
+
+      var defaultSpotID = "0QehxQVH1rzFs5ge7WtJxYfUBQUCHoBhx"; // "0h7hjAqzf8RBu18Pd3eudqNpNmVCgB1mU";
+      
+      var SPOT_DATA_TYPE = createSpotDataTypes();
+
+      var SPOT_DATA_MESSAGE = {
+        DEFAULT: "Track"
+      }
+
+      /******************************************************************
+       *
+       * App main
+       * 
+       ******************************************************************/
+      
+       startUp();
+
+       function startUp() {
+        // Map
+        createMap()
+          .then(function(webmap){
+            map = webmap;
+            // View
+            createView(map)
+              .then(function(mapView){
+                view = mapView;
+                setViewPadding();
+                setPopup();
+                setMapWidgets();
+                setUIHandlers();
+              });
+          })
+          .otherwise(function(err){
+            console.log(err);
+          });
+       }
+
+      /******************************************************************
+       *
+       * Create the map and view
+       * 
+       ******************************************************************/
+
+      function createMap(){
+        var webmap = new Webmap({
+          portalItem: {
+            id: "75c04691cc4941ab8f0ca359e69413a4"
+          }
+        });
+        return webmap.load();
+      }
+      
+      function createView(newMap) {
+        var mapView = new MapView({
+          container: "mapViewDiv",
+          map: newMap,
+          ui: {components: []},
+          padding: viewPaddingNoPanel
+        });
+        return mapView;
+      }
+
+      function isDesktop() {
+        var breakpoint = view.widthBreakpoint;
+        if (breakpoint === "medium" || breakpoint === "large" || breakpoint === "xlarge") {
+         return true;
+        } else {
+         return false;
+        }
+      }
+
+      function setViewPadding() {
+        if (isDesktop()) {
+          if (query(".calcite-panels .panel.in").length > 0) {
+            view.padding = viewPaddingPanel;
+          } else {
+            view.padding = viewPaddingNoPanel;
+          }
+        } else {
+          view.padding = viewPaddingNoPanel;
+        }
+      }
+
+      function setPopup() {
+        // Popup behavior
+        view.popup.dockEnabled = false;
+        view.popup.dockOptions.breakpoint = false;
+        view.popup.dockOptions.buttonEnabled = false;
+        view.popup.messageEnabled = false;
+        // Popup - Minimize/Maximize
+        addPopupMinimize();
+        // Watch for popup
+        setWatchActiveGraphicPopup();
+      }
+            
+      function addPopupMinimize() {
+        if (view.popup) {
+          query(".esri-popup__main-container").addClass("esri-popup-collapsed"); // Collapsed by default
+          var header = query(".esri-popup__header-buttons")[0];
+          var fragment = "<div role='button' class='esri-popup__button' title='Maximize'>" +
+            "<span aria-hidden='true' class='esri-popup__icon esri-icon-up'></span>" +
+            "<span class='esri-icon-font-fallback-text'>Maximize</span>" +
+          "</div>";
+          var node = domConstruct.place(fragment, header, "first");
+          var header = query(".esri-popup__header-title")[0];
+          if (node && header) {
+            //on([node, header], "click", function() {
+            function expandPopup() {
+              var minimized = query(".esri-popup__main-container.esri-popup-collapsed");
+              if (minimized.length === 0) {
+                query(".esri-popup__main-container").addClass("esri-popup-collapsed");
+                query(node).query(".esri-popup__icon").removeClass("esri-icon-down").addClass("esri-icon-up");
+              } else {
+                query(".esri-popup__main-container").removeClass("esri-popup-collapsed");
+                query(node).query(".esri-popup__icon").removeClass("esri-icon-up").addClass("esri-icon-down");
+              }
+            }
+            query(node).on("click", function() {
+              expandPopup();
+            });
+            query(header).on("click", function() {
+              expandPopup();
+            });
+
+          }          
+        }
+      }
+
+      /******************************************************************
+      *
+      * Map Widgets
+      * 
+      ******************************************************************/
+
+      function setMapWidgets() {
+        // Home
+        var homeWidget = new Home({view: view});
+        view.ui.add(homeWidget, "top-left");
+        // Zoom
+        var zoomWidget = new Zoom({view: view});
+        view.ui.add(zoomWidget, "top-left");
+        // Compass
+        var compassWidget = new Compass({view: view});
+        view.ui.add(compassWidget, "top-left");
+        // BasemapToggle
+        var basemapToggleWidget = new BasemapToggle({
+          view: view,
+          nextBasemap: "satellite"
+        });
+        view.ui.add(basemapToggleWidget, {position:"bottom-left"});
+        // Attribution
+        var attributionWidget = new Attribution({view: view});
+        view.ui.add(attributionWidget, {position: "manual"});
+      }
+
+      /******************************************************************
+      *
+      * Setup UI and handlers
+      * 
+      ******************************************************************/
+      
+      function setUIHandlers() {
+        // View - set view centering based on width
+        view.watch("widthBreakpoint", function(breakpoint){        
+          setViewPadding();
+        });
+        // Panels show/hide - change padding
+        query(".calcite-panels .panel").on("show.bs.collapse", function(){
+          if (isDesktop()) {
+            view.padding = viewPaddingPanel;  
+          }
+        });
+        query(".calcite-panels .panel").on("hide.bs.collapse", function(){
+          view.padding = viewPaddingNoPanel;
+        });
+
+        // Spot Start
+        query("#startSpotBtn").on(["click"], function(e){
+          e.preventDefault();          
+          var start = query("#startSpotBtn")[0].innerHTML.indexOf("Start") > -1;
+          showLoadingButton(start);
+          setLoadDataAsyncTimer(start);
+          return false;
+        });
+
+        // Form submit
+        query("#goSpotForm").on("submit", function(e){
+          e.preventDefault();
+          var start = query("#startSpotBtn")[0].innerHTML.indexOf("Start") > -1;
+          showLoadingButton(start);
+          setLoadDataAsyncTimer(start);
+          query("#startSpotBtn")[0].focus();
+          return false;
+        });
+
+        query("#spotDismissBtn").on("click",function(){
+          // All panels
+          query(".calcite-panels .panel").removeClass("in");
+          query(".calcite-panels .panel-collapse").removeClass("in");
+          // Show info panel
+          query("#panelInfo").addClass("in");
+          query("#panelInfo .panel-collapse").addClass("in");          
+        });
+
+        query("#spotDefaultBtn").on("click",function(){
+          query("#shareIDInput")[0].value = "";
+          showLoadingButton(true);
+          setLoadDataAsyncTimer(true);
+          query("#startSpotBtn")[0].focus();      
+        });
+
+        // Change basemaps with panel
+        query("#selectBasemapPanel").on("change", function(e) {
+          view.map.basemap = e.target.value;
+        });
+      }
+
+      function showLoadingButton(show) {
+        if (show) {
+          query("#startSpotBtn")[0].innerHTML = "Stop";
+          query("#startSpotBtn").removeClass("btn-success").addClass("btn-danger");
+          query("#spotLoadingBtn").removeClass("hidden");        
+        } else {
+          query("#startSpotBtn")[0].innerHTML = "Start";
+          query("#startSpotBtn").removeClass("btn-danger").addClass("btn-success");
+          query("#spotLoadingBtn").addClass("hidden");        
+        }
+      } 
+
+      function setLoadDataAsyncTimer(start) {
+        clearInterval(spotTimer);
+        if (start) {
+          loadDataAsync(true); // Start immediately, show panel
+          spotTimer = setInterval(function(){
+            loadDataAsync(false);
+          }, spotDelay);          
+        }
+      }
+
+      /******************************************************************
+      *
+      * SPOT data
+      * 
+      ******************************************************************/
+
+      function loadDataAsync(showPanelVisible) {
+        getData()
+          .then(function(response){
+            var graphics = createGraphics(response);
+            var layer = createSpotLayer(graphics);
+            spotLayer = layer;
+            createSpotTable(spotLayer);
+            showPanel(spotLayer, showPanelVisible);  
+            goToSpot();
+          })
+          .otherwise(function(err){
+            console.log(err);
+            // showPanel(true) // Show error
+          });
+      }
+
+      function getUrl()  {
+        var url;
+        var urlShareId = query("#shareIDInput")[0].value;
+        var i = urlShareId.indexOf("glId=");
+        if (!urlShareId) {
+          urlShareId = defaultSpotID; // TODO
+        } else if (i > -1) {
+          urlShareId = urlShareId.slice(i + 5, urlShareId.length);
+        }
+        var urlDateParams = getDateParams();
+
+        if (urlShareId && urlDateParams) {
+          var urlBase = "https://api.findmespot.com/spot-main-web/consumer/rest-api/2.0/public/feed/";
+          var urlParams = "/message.json?license=null&expiryDate=null&feedPassword=&sort=timeInMili&dir=ASC";
+          url = urlBase + urlShareId + urlParams + urlDateParams;
+        }
+        return url;
+      }
+
+      function getDateParams() {
+        var dateParams;
+        if (startDate && endDate) {
+          // Start
+          var startDateStr = startDate.toISOString();
+          startDateStr = startDateStr.slice(0, startDateStr.indexOf(".")) + "-0000";
+          // End
+          var endDateStr = endDate.toISOString();
+          endDateStr = endDateStr.slice(0, endDateStr.indexOf(".")) + "-0000";
+          // startDate=2012-07-03T13:08:55-0000&endDate=2012-08-02T:08:55-0000        
+          dateParams = "&startDate=" + startDateStr + "&endDate=" + endDateStr;          
+        }
+        return dateParams;
+      }
+            
+      function getData() {
+        var urlSpot = getUrl();
+        // Add to make cross-domain calls
+        var url = new Url(urlSpot);
+        var scheme = url.scheme;
+        var host = url.host;
+        var port = url.port;
+        var server = scheme + "://" + host;
+        if (scheme && host) {
+          esriConfig.request.corsEnabledServers.push(server);
+        }
+        return esriRequest(urlSpot, {
+          responseType: "json"
+        });
+      }
+      
+      /******************************************************************
+      *
+      * Create SPOT graphics
+      * 
+      ******************************************************************/
+
+      function createGraphics(response) {
+        if (response.data && response.data.response && response.data.response.feedMessageResponse && response.data.response.feedMessageResponse.messages){
+          // raw JSON data
+          var messages = response.data.response.feedMessageResponse.messages;
+
+          // Get name and device id
+          if (messages.message.length > 0) {
+            spotName = messages.message[0].messengerName;
+            spotModelId = messages.message[0].modelId;
+          }
+
+          function createPoint(lat, lon) {
+            var pt = new Point({
+              latitude: lat, 
+              longitude: lon, 
+              spatialReference: view.map.spatialReference
+            });
+            return pt;
+          }
+          // Create an array of Graphics from each JSON feature
+          return arrayUtils.map(messages.message, function(message, i) {
+            return {
+              geometry: createPoint(message.latitude, message.longitude),
+              attributes: {
+                ObjectID: i + 1,
+                altitude: message.altitude,
+                longitude: message.longitude,
+                latitude: message.latitude,
+                type: message.messageType === SPOT_DATA_TYPE.OK.VALUE ? SPOT_DATA_TYPE.OK.ALIAS : message.messageType === SPOT_DATA_TYPE.CUSTOM.VALUE ? SPOT_DATA_TYPE.CUSTOM.ALIAS : message.messageType === SPOT_DATA_TYPE.TRACK.VALUE ? SPOT_DATA_TYPE.TRACK.ALIAS : message.messageType,
+                message: message.messageContent || SPOT_DATA_MESSAGE.DEFAULT, // for TRACKs
+                name: message.messengerName,
+                dateTime: new Date(message.dateTime.slice(0,-5)),
+                batteryState: message.batteryState,
+                showCustomMsg: message.showCustomMsg
+              }
+            };
+          });
+        } else {
+          return null;
+        }
+      }
+      
+      /******************************************************************
+      *
+      * Create Featurelayer, fields, popup template & symbols
+      * 
+      ******************************************************************/
+
+      function createSpotLayer(graphics) {
+        // Clean up
+        if (spotLayer) {
+          spotLayer.source.removeAll();
+          view.popup.features = [];  // Need to hide too?
+          view.popup.visible = false;
+        }
+        if (!graphics) {
+          return null;
+        }
+        if (!spotLayer) {
+          var fields = createLayerFields();
+          var popupTemplate = createPopupTemplate();
+          var renderer = createRenderer();
+          // Set ref here
+          spotLayer = new FeatureLayer({
+            source: graphics,
+            fields: fields, 
+            objectIdField: "ObjectID", 
+            renderer: renderer,
+            spatialReference: {
+              wkid: 4326
+            },
+            outFields: ["*"],
+            geometryType: "point",
+            popupTemplate: popupTemplate
+          });
+          // Add the layer
+          map.add(spotLayer); 
+        } else {
+          spotLayer.source.addMany(graphics);
+        }
+        return spotLayer;
+      }
+      
+      /******************************************************************
+      *
+      * Add SPOT data to table
+      * 
+      ******************************************************************/
+
+      function createSpotTable(layer) {
+        // Clean up
+        var spotTableBodyNode = query("#spotTable > tbody")[0];
+        spotTableBodyNode.innerHTML = null;
+        // Add rows
+        if (layer && layer.source.length > 0) {
+          var graphics = layer.source.items;
+          var attributes;
+          var type;
+          var style;
+          var date;
+          // Create rows
+          graphics.forEach(function(result, index) {
+            attributes = result.attributes;
+            type = attributes.type;
+            date = attributes.dateTime.toLocaleTimeString();
+            // Create node
+            domConstruct.place("<tr data-result-index='" + index + "'> <td scope='row'>" + (index + 1) + "</td> <td>" + type + "</td> <td>" + date +" </tr> ", spotTableBodyNode, "last");
+          });
+          // Set listeners
+          query("#spotTable > tbody > tr").on("click", function(event) {
+            if (layer && layer.source.length > 0) {
+              var target = event.currentTarget;
+              var resultIndex = domAttr.get(target, "data-result-index");
+              var index = parseInt(resultIndex, 10);
+              if (index > -1) {
+                var graphic = getGraphicFromIndex(index);
+                goToSpot(graphic, 10, true, false);
+              }            
+            }
+          });
+        }
+      }
+
+      /******************************************************************
+      *
+      * Select Spot
+      * 
+      ******************************************************************/
+
+      function showPanel(layer, show) {
+        // Show tracks
+        if (layer && layer.source.length > 0) {
+          // Update spot info
+          query("#panelSpotInfo")[0].innerHTML = "<p>" + spotName + " (" + spotModelId + ")</p>";
+          query("#panelSpotInfo").removeClass("hidden");
+          query("#panelError").addClass("hidden");
+          //query("#panelTracks").removeClass("hidden");
+          query("#panelTracks .panel-body").removeClass("hidden");
+        } else { // Show error
+          query("#panelSpotInfo").addClass("hidden");
+          query("#panelError").removeClass("hidden");
+          //query("#panelTracks").addClass("hidden");
+          showLoadingButton(false);
+          setLoadDataAsyncTimer(false);
+          query("#panelTracks .panel-body").addClass("hidden");
+          // reset();
+        }
+        if (show) {
+          // All panels
+          query(".calcite-panels .panel").removeClass("in");
+          query(".calcite-panels .panel-collapse").removeClass("in");
+          // Show tracks panel
+          query("#panelTracks").collapse("show");
+          query("#panelTracks .panel-collapse").collapse("show");          
+        }
+        return;
+      }
+
+      /******************************************************************
+      *
+      * Tracker
+      * 
+      ******************************************************************/
+      
+      function getGraphicFromIndex(index) {
+        var graphic;
+        if (spotLayer && spotLayer.source.items.length > index) {
+          graphic = spotLayer.source.items[index];
+        } 
+        return graphic;
+      }
+
+      function getIndexFromGraphic(graphic) {
+        var index = -1;
+        if (graphic && graphic.attributes && graphic.attributes.ObjectID) {
+          index = graphic.attributes.ObjectID - 1;
+        }
+        return index;
+      }
+
+      function getActiveGraphic() {
+        var graphic;
+        if (view.popup.features.length > 0) {
+          graphic = view.popup.features[0]; 
+        } else {
+          graphic = getGraphicFromIndex(0); // Default
+        }
+        return graphic;
+      }
+      
+      function setActiveListItem(index, scroll) {
+        // Remove existing selection
+        query("#spotTable tr").removeClass("active"); 
+        // Add new selection
+        if (index > -1) {
+          query("#spotTable tr[data-result-index='" + index + "']").addClass("active");
+          //scrollList(false);
+        }
+        return;
+      }
+
+      function scrollList(top) {
+        var row = query("#spotTable tr.active");
+        if (row.length > 0) {
+          row[0].scrollIntoView(top);
+        } 
+      }
+
+      function setWatchActiveGraphicPopup() {
+        view.popup.watch("selectedFeature", function(graphic) {
+          var index = getIndexFromGraphic(graphic);
+          // Global
+          spotActiveIndex = index;
+          // Select list item
+          if (index > -1) {
+            setActiveListItem(index, graphic._scrollList);
+            // graphic._scrollList = false;
+          } else { // Unselect items
+            setActiveListItem(-1);
+          }
+        });
+      }
+      
+      /******************************************************************
+      *
+      * Go to Spot
+      * 
+      ******************************************************************/
+
+      function goToSpot(graphic, zoomLevel, showPopup, scrollList, useDefaultTilt) {
+        if (!spotLayer) {
+          return null;
+        }
+        if (!graphic) {
+          // graphic = getGraphicFromIndex(0); // Get first
+          graphic = getGraphicFromIndex(spotLayer.source.length - 1); // Get last (default)
+          showPopup = true;
+          //scrollList = true;
+        }
+        if (graphic) {
+          // view.popup.features = [graphic]; // Set selected list item
+          //graphic._scrollList = scrollList;
+          // Zoom
+          view.goTo({
+            target: graphic.geometry,
+            scale: spotViewScale 
+          }, {animate: true, duration: 100 });
+          view.popup.open({
+            location: graphic.geometry,
+            features: [graphic]
+          });
+        }
+      }
+
+      // Layer fields
+      
+      function createLayerFields() {
+        var fields = [
+        {
+          name: "ObjectID",
+          alias: "ObjectID",
+          type: "oid"
+        }, {
+          name: "name",
+          alias: "name",
+          type: "string"
+        }, {
+          name: "type",
+          alias: "type",
+          type: "string"
+        }, {
+          name: "message",
+          alias: "message",
+          type: "string"
+        }, {
+          name: "altitude",
+          alias: "altitude",
+          type: "double"
+        }, {
+          name: "latitude",
+          alias: "latitude",
+          type: "double"
+        }, {
+          name: "longitude",
+          alias: "longitude",
+          type: "double"
+        }, {
+          name: "dateTime",
+          alias: "time",
+          type: "date"
+        }, {
+          name: "batteryState",
+          alias: "battery",
+          type: "boolean"
+        },{
+          name: "showCustomMsg",
+          alias: "customMsg",
+          type: "boolean"
+        }];
+        return fields;
+      }
+      
+      // Layer PopupTemplate
+      
+      function createPopupTemplate() {
+        // Popup template for the layer
+        var popupTemplate = {
+          title: function(val) {
+            var id = val.graphic.attributes.ObjectID;
+            var msg = val.graphic.attributes.message;
+            //var dateStr = val.graphic.attributes.dateTime.toLocaleString();
+            var dateStr = val.graphic.attributes.dateTime.toLocaleTimeString();
+            return id + " " + msg + " " + dateStr;
+          },
+          content: [{
+            type: "fields",
+            fieldInfos: [
+           /* {
+              fieldName: "ObjectID",
+              label: "ID",
+              visible: true
+            }, {
+              fieldName: "dateTime",
+              label: "Time",
+              visible: true
+            }, */
+            {
+              fieldName: "type",
+              label: "Type",
+              visible: true
+            },/*
+            {
+              fieldName: "content",
+              label: "Message",
+              visible: true
+            }, */
+            {
+              fieldName: "latitude",
+              label: "Latitude",
+              visible: true
+            }, {
+              fieldName: "longitude",
+              label: "Longitude",
+              visible: true
+            }, {
+              fieldName: "altitude",
+              label: "Altitude",
+              visible: true
+            }, {
+              fieldName: "batteryState",
+              label: "Battery State",
+              visible: true
+            }/*, {
+              fieldName: "showCustomMsg",
+              label: "Custom Message",
+              visible: true
+            }*/]
+          }],
+          fieldInfos: [{
+            fieldName: "dateTime",
+            format: {
+              dateFormat: "short-date-short-time"
+            }
+          }]
+        };
+        return popupTemplate;
+      }
+
+      // Layer Symbols and Renderer
+            
+      function create2DSymbol(style, size, color, outline) {
+        return new SimpleMarkerSymbol({
+          style: style,
+          size: size,
+          color: color,
+          outline: outline
+        });
+      }
+
+      function createRenderer() {
+        // Symbols
+        var trackSym = create2DSymbol("circle", 8, [0,0,0], {width: 1, color: [255, 255, 255], style: "solid"});
+        var okSym = create2DSymbol("circle", 12, [50,200,100], {width: 1, color: [255, 255, 255], style: "solid"});
+        var customSym = create2DSymbol("circle", 12, [50,100,255], {width: 1, color: [255, 255, 255], style: "solid"});
+        var helpSym = create2DSymbol("circle", 12, [255,255,0], {width: 1, color: [255, 255, 255], style: "solid"});
+        var sosSym = create2DSymbol("circle", 12, [255,0,0], {width: 1, color: [255, 255, 255], style: "solid"});          
+
+        // Renderer
+        var renderer = new UniqueValueRenderer({
+           field: "type",
+           defaultSymbol: trackSym,
+           uniqueValueInfos: [{
+              value: SPOT_DATA_TYPE.TRACK.ALIAS,
+              symbol: trackSym,
+              label: SPOT_DATA_TYPE.TRACK.ALIAS  
+            }, {
+              value: SPOT_DATA_TYPE.OK.ALIAS, 
+              symbol: okSym,
+              label: SPOT_DATA_TYPE.OK.ALIAS  
+            }, {
+              value: SPOT_DATA_TYPE.CUSTOM.ALIAS, 
+              symbol: customSym,
+              label: SPOT_DATA_TYPE.CUSTOM.ALIAS  
+            }, {
+              value: SPOT_DATA_TYPE.HELP.ALIAS, 
+              symbol: helpSym,
+              label: SPOT_DATA_TYPE.HELP.ALIAS  
+            },{
+              value: SPOT_DATA_TYPE.SOS.ALIAS, 
+              symbol: sosSym,
+              label: SPOT_DATA_TYPE.SOS.ALIAS  
+            }],
+          legendOptions: {
+            title: " "
+          }
+        });
+
+        return renderer;
+      }
+      
+
+      /******************************************************************
+      *
+      * Dot
+      * 
+      ******************************************************************/
+      
+      // <div class="dot">
+      //   <div class="centraldot"></div>
+      //   <div class="wave"></div>
+      // </div>
+
+      /******************************************************************
+      *
+      * Legend
+      * 
+      ******************************************************************/
+      
+      function createLegend(layer) {
+        legend = new Legend({
+            view: view,
+            layerInfos: [
+            {
+              layer: layer,
+              title: "Legend"
+            }]
+          }, "legendDiv");
+        view.ui.add(legend, "bottom-left");
+        return layer;
+      }
+
+      /******************************************************************
+      *
+      * Utils
+      * 
+      ******************************************************************/
+
+      function createSpotDataTypes() {
+        return {
+          OK: {
+            VALUE: "OK",
+            ALIAS: "Check In"
+          },
+          TRACK: {
+            VALUE: "TRACK",
+            ALIAS: "Track"
+          },
+          CUSTOM: {
+            VALUE: "CUSTOM",
+            ALIAS: "Message"
+          },
+          EXTREME_TRACK: {
+            VALUE: "EXTREME-TRACK",
+            ALIAS: "Extreme Track"
+          },
+          UNLIMITED_TRACK: {
+            VALUE: "UNLIMITED-TRACK",
+            ALIAS: "Unlimited Track"
+          },
+          NEWMOVEMENT: {
+            VALUE: "NEWMOVEMENT",
+            ALIAS: "New Movement"
+          },
+          HELP: {
+            VALUE: "HELP",
+            ALIAS: "Help"
+          },
+          HELP_CANCEL: {
+            VALUE: "HELP-CANCEL",
+            ALIAS: "Help Cancel"
+          },
+          POI: {
+            VALUE: "POI",
+            ALIAS: "POI"
+          },
+          SOS: {
+            VALUE: "SOS",
+            ALIAS: "SOS"
+          },
+          STOP: {
+            VALUE: "STOP",
+            ALIAS: "Stop"
+          }
+        }
+      }
+
+      /******************************************************************
+      *
+      * Reset
+      * 
+      ******************************************************************/
+    
+      function reset() {
+        // Layer
+        if (spotLayer && spotLayer.source.length) {
+          spotLayer.source.removeAll();
+          view.popup.features = [];
+          view.popup.visible = false;
+        }
+        // Panel
+        query("#panelTracks").collapse();
+        // Table
+        var spotTableBodyNode = query("#spotTable > tbody")[0];
+        // Clean up
+        spotTableBodyNode.innerHTML = null;
+      }
+
+      // Executes if data retrieval was unsuccessful.
+      function errback(error) {
+        console.error("Load failure.", error);
+        reset();
+      }
+
+    });
+  </script>
+
+</body>
+</html>
