@@ -2,4 +2,6 @@
 Susitna 100 Race Spot Tracker
 
 
-[View app](alaframboise.github.io/su100-spot-tracker/index.html)
+[View app](https://alaframboise.github.io/su100-spot-tracker/index.html)
+
+https://tinyurl.com/su100tracker
