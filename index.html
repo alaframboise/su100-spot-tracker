@@ -79,8 +79,8 @@
     /* Spinner */
 
     .btn-loading .glyphicon.spinning {
-      animation: spin 15s infinite linear;
-      -webkit-animation: spin2 15s infinite linear;
+      animation: spin 5s infinite linear;
+      -webkit-animation: spin2 5s infinite linear;
     }
      
     @keyframes spin {
@@ -329,6 +329,9 @@
       .calcite-panels .panel-body {
          max-height: 100px;
       }
+      .calcite-panels #panelInfo .panel-body {
+        max-height: 250px;
+      }
     }
 
   </style>
@@ -424,7 +427,7 @@
              <li>Paste in the URL above and click "Start".</li>
             </ol>
             </p>
-            <p>NOTE: Spot data is updated every 10 minutes.</p>
+            <p>NOTE: Tracks are only updated every 10 minutes.</p>
           </div>
           <hr>
           <div class="info-note">
@@ -452,9 +455,9 @@
 
         <div id="panelError">
           <div class="spot-panel-error">
-            <p>Sorry, no data found. Please check the URL or ID.</p>
-            <button id="spotDefaultBtn" class="btn btn-spot">Use Default</button><button id="spotDismissBtn" class="btn btn-success">Try Again</button>
-            <div class="spot-panel-note">NOTE: To follow a friend, ask them for their SPOT share URL ID and use it here.</div>
+            <p>Sorry, no data found. Try again Feb 18th 9AM (Alaska Standard Time).</p>
+            <button id="spotDefaultBtn" class="btn btn-spot">Follow AL</button><button id="spotDismissBtn" class="btn btn-success">Cancel</button>
+            <!--div class="spot-panel-note">NOTE: To follow a friend, ask them for their SPOT share URL ID and use it here.</div-->
           </div>
         </div>      
                   
@@ -584,7 +587,9 @@
 
       var viewPaddingNoPanel = {top: 50, bottom: 0, right: 0, left: 0};
     
-      var spotViewScale = 25000;
+      var spotViewScale = 75000;
+
+      var spotZoomLevel = 10;
 
       // Spot
 
@@ -599,16 +604,12 @@
       //https://api.findmespot.com/spot-main-web/consumer/rest-api/2.0/public/feed/0QehxQVH1rzFs5ge7WtJxYfUBQUCHoBhx/message.json?license=null&expiryDate=null&feedPassword=&sort=timeInMili&dir=ASC&startDate=2017-02-11T00:00:00-0000&endDate=2017-02-12T00:00:00-0000
 
       // Live - Sat Feb 18th
-      // var startDate = new Date('2017-02-18T00:00:00');
-      // var endDate = new Date('2017-02-20T00:00:00');
+      var startDate = new Date('2017-02-18T00:00:00');
+      var endDate = new Date('2017-02-20T00:00:00');
       
       // Test - Friday Feb 17
-      var startDate = new Date('2017-02-17T00:00:00');
-      var endDate = new Date('2017-02-19T00:00:00'); 
-
-      // Test - Sat Feb 11th
-      //var startDate = new Date('2017-02-11T00:00:00'); // test
-      //var endDate = new Date('2017-02-12T00:00:00'); // test
+      //var startDate = new Date('2017-02-17T00:00:00');
+      // var endDate = new Date('2017-02-19T00:00:00'); 
 
       var defaultSpotID = "0QehxQVH1rzFs5ge7WtJxYfUBQUCHoBhx"; // "0h7hjAqzf8RBu18Pd3eudqNpNmVCgB1mU";
       
@@ -1171,7 +1172,8 @@
           // Zoom
           view.goTo({
             target: graphic.geometry,
-            scale: spotViewScale 
+            //scale: spotViewScale 
+            zoom: spotZoomLevel
           }, {animate: true, duration: 100 });
           view.popup.open({
             location: graphic.geometry,
@@ -1307,11 +1309,11 @@
 
       function createRenderer() {
         // Symbols
-        var trackSym = create2DSymbol("circle", 8, [0,0,0], {width: 1, color: [255, 255, 255], style: "solid"});
-        var okSym = create2DSymbol("circle", 12, [50,200,100], {width: 1, color: [255, 255, 255], style: "solid"});
-        var customSym = create2DSymbol("circle", 12, [50,100,255], {width: 1, color: [255, 255, 255], style: "solid"});
-        var helpSym = create2DSymbol("circle", 12, [255,255,0], {width: 1, color: [255, 255, 255], style: "solid"});
-        var sosSym = create2DSymbol("circle", 12, [255,0,0], {width: 1, color: [255, 255, 255], style: "solid"});          
+        var trackSym = create2DSymbol("circle", 6, [50,100,255], {width: 1, color: [255, 255, 255], style: "solid"});
+        var okSym = create2DSymbol("circle", 14, [50,200,100], {width: 1, color: [255, 255, 255], style: "solid"});
+        var customSym = create2DSymbol("circle", 14, [100,200,255], {width: 1, color: [255, 255, 255], style: "solid"});
+        var helpSym = create2DSymbol("circle", 14, [255,255,0], {width: 1, color: [255, 255, 255], style: "solid"});
+        var sosSym = create2DSymbol("circle", 14, [255,0,0], {width: 1, color: [255, 255, 255], style: "solid"});          
 
         // Renderer
         var renderer = new UniqueValueRenderer({
