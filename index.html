@@ -591,6 +591,9 @@
 
       var spotZoomLevel = 10;
 
+      var startRecord = 0;
+      var finishRecord = 50;
+
       // Spot
 
       var spotName;
@@ -884,14 +887,14 @@
 
         if (urlShareId && urlDateParams) {
           var urlBase = "https://api.findmespot.com/spot-main-web/consumer/rest-api/2.0/public/feed/";
-          var urlParams = "/message.json?license=null&expiryDate=null&feedPassword=&sort=timeInMili&dir=ASC";
+          var urlParams = "/message.json?license=null&expiryDate=null&feedPassword=&sort=timeInMili&dir=ASC&limit=100";
           url = urlBase + urlShareId + urlParams + urlDateParams;
         }
         return url;
       }
 
       function getDateParams() {
-        var dateParams;
+        var dateParams, recordParams;
         if (startDate && endDate) {
           // Start
           var startDateStr = startDate.toISOString();
@@ -900,7 +903,10 @@
           var endDateStr = endDate.toISOString();
           endDateStr = endDateStr.slice(0, endDateStr.indexOf(".")) + "-0000";
           // startDate=2012-07-03T13:08:55-0000&endDate=2012-08-02T:08:55-0000        
-          dateParams = "&startDate=" + startDateStr + "&endDate=" + endDateStr;          
+          dateParams = "&startDate=" + startDateStr + "&endDate=" + endDateStr; 
+          // Append start/finish records
+          // recordParams = "&start=" + startRecord;
+          // startRecord += 51;
         }
         return dateParams;
       }
